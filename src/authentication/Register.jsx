@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './Register.css'; // External CSS file for styling
-import { GoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -24,32 +24,40 @@ const Register = () => {
     console.log('Form Submitted', formData);
   };
 
-  const handleGoogleSignIn = async (credentialResponse) => {
-    setIsLoading(true);
-    try {
-      const id_token = credentialResponse.credential;
-      const response = await fetch('https://dating-app-kiragu-maina9939-0skprw3t.leapcell.dev/apis/dj-rest-auth/google/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ access_token: id_token }),
-      });
+  const handleGoogleSignIn = useGoogleLogin({
+    onSuccess: async (codeResponse) => {
+      setIsLoading(true);
+      try {
+        const authCode = codeResponse.code; // Use the authorization code
+        console.log('Authorization code:', authCode);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Network response was not ok: ${errorData.message || 'Unknown error'}`);
+        const response = await fetch('https://dating-app-kiragu-maina9939-0skprw3t.leapcell.dev/apis/dj-rest-auth/google/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ code: authCode }), // Send the auth code to the backend
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`Network response was not ok: ${errorData.message || 'Unknown error'}`);
+        }
+
+        const data = await response.json();
+        console.log('Response from server:', data);
+      } catch (error) {
+        console.error('Error during Google Sign-In:', error);
+        alert(`An error occurred: ${error.message}`);
+      } finally {
+        setIsLoading(false);
       }
-
-      const data = await response.json();
-      console.log('Response from server:', data);
-    } catch (error) {
-      console.error('Error during Google Sign-In:', error);
-      alert(`An error occurred: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    onError: () => {
+      console.log('Login Failed');
+    },
+    flow: 'auth-code', // Switch to Authorization Code Flow
+  });
 
   return (
     <div className="register-container">
@@ -104,14 +112,9 @@ const Register = () => {
 
         <div className="separator">or</div>
 
-        <GoogleLogin
-          onSuccess={handleGoogleSignIn}
-          onError={() => {
-            console.log('Login Failed');
-          }}
-          logo_alignment="left" // Add other props as needed
-          type="standard" // Choose 'standard' or 'icon'
-        />
+        <button type="button" onClick={() => handleGoogleSignIn()} className="google-login-btn">
+          Sign in with Google
+        </button>
       </form>
 
       {isLoading && (
