@@ -9,6 +9,8 @@ const Register = () => {
     confirmPassword: '',
   });
 
+  const [isLoading, setIsLoading] = useState(false); // New state to handle loading
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -18,42 +20,42 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
     console.log('Form Submitted', formData);
   };
 
   const handleGoogleSignIn = async () => {
+    setIsLoading(true); // Show spinner when sign-in starts
     try {
-      // Load the Google auth library
       const { gapi } = window;
       await gapi.load('client:auth2', async () => {
-        await gapi.auth2.init({
-          client_id: '52680060286-i1gvc5dp0uinja76r0a8orvl1qq7e0qn.apps.googleusercontent.com', // Replace with your Google client ID
-        });
+        const clientId =  '52680060286-i1gvc5dp0uinja76r0a8orvl1qq7e0qn.apps.googleusercontent.com'; // Replace with your Google client ID
 
-        // Sign in with Google
+        await gapi.auth2.init({ client_id: clientId });
+
         const googleUser = await gapi.auth2.getAuthInstance().signIn();
         const id_token = googleUser.getAuthResponse().id_token;
 
-        // Send the ID token to your backend for verification
         const response = await fetch('https://dating-app-kiragu-maina9939-0skprw3t.leapcell.dev/apis/dj-rest-auth/google/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ access_token: id_token }), // Send the token
+          body: JSON.stringify({ access_token: id_token }),
         });
 
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          const errorData = await response.json();
+          throw new Error(`Network response was not ok: ${errorData.message || 'Unknown error'}`);
         }
 
         const data = await response.json();
         console.log('Response from server:', data);
-        // Handle successful login, e.g., redirect to homepage or store user data
       });
     } catch (error) {
       console.error('Error during Google Sign-In:', error);
+      alert(`An error occurred: ${error.message}`);
+    } finally {
+      setIsLoading(false); // Hide spinner after sign-in completes
     }
   };
 
@@ -115,8 +117,16 @@ const Register = () => {
           Register with Google
         </button>
       </form>
+
+      {isLoading && (
+        <div className="loading-spinner">
+          <div className="spinner"></div> {/* CSS spinner */}
+        </div>
+      )}
     </div>
   );
 };
 
 export default Register;
+
+
