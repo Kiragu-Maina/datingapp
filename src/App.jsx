@@ -11,7 +11,9 @@ const App = () => {
       <div className="app">
         <Navbar /> {/* Adding the Navbar here */}
         <Routes>
-          <Route path="/" element={<Homepage />} />
+          <Route path="/" element={<Homepage loggedin={'not logged in'} />} />
+          <Route path="/home" element={<Homepage loggedin={'wow'}/>} />
+
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
         </Routes>

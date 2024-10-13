@@ -36,7 +36,7 @@ const Register = () => {
         const id_token = googleUser.getAuthResponse().id_token;
 
         // Send the ID token to your backend for verification
-        const response = await fetch('http://127.0.0.1:8000/apis/dj-rest-auth/google/', {
+        const response = await fetch('https://dating-app-kiragu-maina9939-0skprw3t.leapcell.dev/apis/dj-rest-auth/google/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

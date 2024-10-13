@@ -20,9 +20,39 @@ const Login = () => {
     console.log('Login Form Submitted', formData);
   };
 
-  const handleGoogleSignIn = () => {
-    // Handle Google Sign-In logic here
-    console.log('Login with Google');
+  const handleGoogleSignIn = async () => {
+    try {
+      // Load the Google auth library
+      const { gapi } = window;
+      await gapi.load('client:auth2', async () => {
+        await gapi.auth2.init({
+          client_id: '52680060286-i1gvc5dp0uinja76r0a8orvl1qq7e0qn.apps.googleusercontent.com', // Replace with your Google client ID
+        });
+
+        // Sign in with Google
+        const googleUser = await gapi.auth2.getAuthInstance().signIn();
+        const id_token = googleUser.getAuthResponse().id_token;
+
+        // Send the ID token to your backend for verification
+        const response = await fetch('https://dating-app-kiragu-maina9939-0skprw3t.leapcell.dev/apis/dj-rest-auth/google/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ access_token: id_token }), // Send the token
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log('Response from server:', data);
+        // Handle successful login, e.g., redirect to homepage or store user data
+      });
+    } catch (error) {
+      console.error('Error during Google Sign-In:', error);
+    }
   };
 
   return (

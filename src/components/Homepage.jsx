@@ -1,6 +1,6 @@
-const Homepage = () => {
+const Homepage = (loggedin) => {
   return (
-    <div>Homepage</div>
+    <div>Homepage {loggedin}</div>
   )
 }
 
