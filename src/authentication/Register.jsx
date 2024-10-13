@@ -33,7 +33,7 @@ const Register = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code: id_token }),
+        body: JSON.stringify({ access_token: id_token }),
       });
 
       if (!response.ok) {
