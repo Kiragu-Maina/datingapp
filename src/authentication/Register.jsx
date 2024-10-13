@@ -28,7 +28,8 @@ const Register = () => {
     try {
       const { gapi } = window;
       await gapi.load('client:auth2', async () => {
-        const clientId =  '52680060286-i1gvc5dp0uinja76r0a8orvl1qq7e0qn.apps.googleusercontent.com'; // Replace with your Google client ID
+        const clientId =  '52680060286-t8upfg5vd6g00sd8vbfva79j3ckji4a9.apps.googleusercontent.com'; // Replace with your Google client ID
+        
 
         await gapi.auth2.init({ client_id: clientId });
 
