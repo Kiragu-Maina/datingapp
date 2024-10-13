@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Register.css'; // External CSS file for styling
+import { GoogleLogin } from '@react-oauth/google';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +10,7 @@ const Register = () => {
     confirmPassword: '',
   });
 
-  const [isLoading, setIsLoading] = useState(false); // New state to handle loading
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -23,40 +24,30 @@ const Register = () => {
     console.log('Form Submitted', formData);
   };
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true); // Show spinner when sign-in starts
+  const handleGoogleSignIn = async (credentialResponse) => {
+    setIsLoading(true);
     try {
-      const { gapi } = window;
-      await gapi.load('client:auth2', async () => {
-        const clientId =  '52680060286-t8upfg5vd6g00sd8vbfva79j3ckji4a9.apps.googleusercontent.com'; // Replace with your Google client ID
-        
-
-        await gapi.auth2.init({ client_id: clientId });
-
-        const googleUser = await gapi.auth2.getAuthInstance().signIn();
-        const id_token = googleUser.getAuthResponse().id_token;
-
-        const response = await fetch('https://dating-app-kiragu-maina9939-0skprw3t.leapcell.dev/apis/dj-rest-auth/google/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ access_token: id_token }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`Network response was not ok: ${errorData.message || 'Unknown error'}`);
-        }
-
-        const data = await response.json();
-        console.log('Response from server:', data);
+      const id_token = credentialResponse.credential;
+      const response = await fetch('https://dating-app-kiragu-maina9939-0skprw3t.leapcell.dev/apis/dj-rest-auth/google/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ access_token: id_token }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Network response was not ok: ${errorData.message || 'Unknown error'}`);
+      }
+
+      const data = await response.json();
+      console.log('Response from server:', data);
     } catch (error) {
       console.error('Error during Google Sign-In:', error);
       alert(`An error occurred: ${error.message}`);
     } finally {
-      setIsLoading(false); // Hide spinner after sign-in completes
+      setIsLoading(false);
     }
   };
 
@@ -113,10 +104,14 @@ const Register = () => {
 
         <div className="separator">or</div>
 
-        <button type="button" className="google-btn" onClick={handleGoogleSignIn}>
-          <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo" />
-          Register with Google
-        </button>
+        <GoogleLogin
+          onSuccess={handleGoogleSignIn}
+          onError={() => {
+            console.log('Login Failed');
+          }}
+          logo_alignment="left" // Add other props as needed
+          type="standard" // Choose 'standard' or 'icon'
+        />
       </form>
 
       {isLoading && (
@@ -129,5 +124,3 @@ const Register = () => {
 };
 
 export default Register;
-
-
