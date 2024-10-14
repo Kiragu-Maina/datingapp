@@ -34,7 +34,7 @@
             headers: {
             'Content-Type': 'application/json',
             },
-            body: JSON.stringify({access_token: id_token }),
+            body: JSON.stringify({id_token: id_token }),
         });
 
         if (!response.ok) {
