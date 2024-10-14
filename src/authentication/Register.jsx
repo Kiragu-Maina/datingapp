@@ -29,7 +29,7 @@
         try {
         const id_token = credentialResponse.credential;
         console.log('code or token', id_token);
-        const response = await fetch('https://dating-app-kiragu-maina9939-0skprw3t.leapcell.dev/apis/dj-rest-auth/google/', {
+        const response = await fetch('https://expressjs-app-sso-kiragu-maina9939-mjoqa3jr.leapcell.dev/google-auth/', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',

@@ -1,98 +1,132 @@
 import { useState } from 'react';
-import './Login.css'; // External CSS file for styling
+import './Login.css'; // External CSS file for custom styles if needed
+import { GoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
     });
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle login form submission logic here
-    console.log('Login Form Submitted', formData);
-  };
+    const [isLoading, setIsLoading] = useState(false);
 
-  const handleGoogleSignIn = async () => {
-    try {
-      // Load the Google auth library
-      const { gapi } = window;
-      await gapi.load('client:auth2', async () => {
-        await gapi.auth2.init({
-          client_id: '52680060286-i1gvc5dp0uinja76r0a8orvl1qq7e0qn.apps.googleusercontent.com', // Replace with your Google client ID
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
         });
+    };
 
-        // Sign in with Google
-        const googleUser = await gapi.auth2.getAuthInstance().signIn();
-        const id_token = googleUser.getAuthResponse().id_token;
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log('Form Submitted', formData);
+        setIsLoading(true);
+        try {
+            const response = await fetch('https://expressjs-app-sso-kiragu-maina9939-mjoqa3jr.leapcell.dev/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
 
-        // Send the ID token to your backend for verification
-        const response = await fetch('https://dating-app-kiragu-maina9939-0skprw3t.leapcell.dev/apis/dj-rest-auth/google/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ access_token: id_token }), // Send the token
-        });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Network response was not ok: ${errorData.message || 'Unknown error'}`);
+            }
 
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+            const data = await response.json();
+            console.log('Response from server:', data);
+            // Handle successful login (e.g., save token, redirect user, etc.)
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert(`An error occurred: ${error.message}`);
+        } finally {
+            setIsLoading(false);
         }
+    };
 
-        const data = await response.json();
-        console.log('Response from server:', data);
-        // Handle successful login, e.g., redirect to homepage or store user data
-      });
-    } catch (error) {
-      console.error('Error during Google Sign-In:', error);
-    }
-  };
+    const handleGoogleSignIn = async (credentialResponse) => {
+        setIsLoading(true);
+        try {
+            const id_token = credentialResponse.credential;
+            console.log('ID Token:', id_token);
+            const response = await fetch('https://expressjs-app-sso-kiragu-maina9939-mjoqa3jr.leapcell.dev/google-auth/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ access_token: id_token }),
+            });
 
-  return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h2 className="form-title">Login</h2>
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Network response was not ok: ${errorData.message || 'Unknown error'}`);
+            }
 
-        <div className="form-group">
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Email"
-            required
-          />
+            const data = await response.json();
+            console.log('Response from server:', data);
+            // Handle successful Google login (e.g., save token, redirect user, etc.)
+        } catch (error) {
+            console.error('Error during Google Sign-In:', error);
+            alert(`An error occurred: ${error.message}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <form className="bg-white p-8 rounded shadow-md w-96" onSubmit={handleSubmit}>
+                <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+
+                <div className="mb-4">
+                    <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="Email"
+                        required
+                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <input
+                        type="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="Password"
+                        required
+                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                </div>
+
+                <button type="submit" className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200">
+                    Log In
+                </button>
+
+                <div className="my-4 text-center text-gray-600">or</div>
+
+                <GoogleLogin
+                    onSuccess={handleGoogleSignIn}
+                    onError={() => {
+                        console.log('Login Failed');
+                    }}
+                    logo_alignment="left"
+                    type="standard"
+                />
+            </form>
+
+            {isLoading && (
+                <div className="loading-spinner">
+                    <div className="spinner"></div> {/* CSS spinner, add your spinner styling */}
+                </div>
+            )}
         </div>
-
-        <div className="form-group">
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Password"
-            required
-          />
-        </div>
-
-        <button type="submit" className="submit-btn">Login</button>
-
-        <div className="separator">or</div>
-
-        <button type="button" className="google-btn" onClick={handleGoogleSignIn}>
-          <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo" />
-          Login with Google
-        </button>
-      </form>
-    </div>
-  );
+    );
 };
 
 export default Login;
