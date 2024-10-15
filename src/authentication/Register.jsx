@@ -1,6 +1,7 @@
     import { useState } from 'react';
     import './Register.css'; // External CSS file for styling
-    import { GoogleLogin } from '@react-oauth/google';
+    // import { GoogleLogin } from '@react-oauth/google';
+    import Modal from 'react-modal';
 
     const Register = () => {
     const [formData, setFormData] = useState({
@@ -11,6 +12,8 @@
     });
 
     const [isLoading, setIsLoading] = useState(false);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [authUrl, setAuthUrl] = useState('');
 
     const handleChange = (e) => {
         setFormData({
@@ -24,34 +27,33 @@
         console.log('Form Submitted', formData);
     };
 
-    const handleGoogleSignIn = async (credentialResponse) => {
-        setIsLoading(true);
+    const handleGoogleSignIn = async () => {
         try {
-        const id_token = credentialResponse.credential;
-        console.log('code or token', id_token);
-        const response = await fetch('https://expressjs-app-sso-kiragu-maina9939-mjoqa3jr.leapcell.dev/google-auth/', {
-            method: 'POST',
+          // Call your backend to get the authorization URL
+          const response = await fetch('https://expressjs-app-sso-kiragu-maina9939-mjoqa3jr.leapcell.dev/google-auth/url', {
+            method: 'GET',
             headers: {
-            'Content-Type': 'application/json',
+              'Content-Type': 'application/json',
             },
-            body: JSON.stringify({id_token: id_token }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Network response was not ok: ${errorData.message || 'Unknown error'}`);
-        }
-
-        const data = await response.json();
-        console.log('Response from server:', data);
+          });
+    
+          if (response.ok) {
+            const { url } = await response.json(); // Assuming your backend returns the URL in a JSON object
+            setAuthUrl(url); // Set the authorization URL in state
+            setModalIsOpen(true); // Open the modal
+          } else {
+            console.error('Failed to retrieve Google authorization URL');
+          }
         } catch (error) {
-        console.error('Error during Google Sign-In:', error);
-        alert(`An error occurred: ${error.message}`);
-        } finally {
-        setIsLoading(false);
+          console.error('Error during Google sign-in:', error);
         }
-    };
-
+      };
+    
+      const handleModalClose = () => {
+        setModalIsOpen(false);
+        window.location.href = authUrl; // Redirect the user to the Google consent page when closing the modal
+      };
+    // https://expressjs-app-sso-kiragu-maina9939-mjoqa3jr.leapcell.dev/google-auth/
     return (
         <div className="register-container">
         <form className="register-form" onSubmit={handleSubmit}>
@@ -105,14 +107,19 @@
 
             <div className="separator">or</div>
 
-            <GoogleLogin
-            onSuccess={handleGoogleSignIn}
-            onError={() => {
-                console.log('Login Failed');
-            }}
-            logo_alignment="left" // Add other props as needed
-            type="standard" // Choose 'standard' or 'icon'
-            />
+            <button onClick={handleGoogleSignIn}>Sign in with Google</button>
+
+      {/* Modal for displaying the authorization URL */}
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={() => setModalIsOpen(false)}
+        contentLabel="Google Sign-In"
+      >
+        <h2>Google Sign-In</h2>
+        <p>Please click the button below to continue with Google sign-in.</p>
+        <button onClick={handleModalClose}>Proceed to Google Sign-In</button>
+        <button onClick={() => setModalIsOpen(false)}>Cancel</button>
+      </Modal>
         </form>
 
         {isLoading && (

@@ -4,7 +4,7 @@ import Navbar from './components/Navbar'; // Importing the Navbar
 import Homepage from './components/Homepage';
 import Register from './authentication/Register';
 import Login from './authentication/Login';
-
+import Callback from './authentication/Callback';
 const App = () => {
   return (
     <Router>
@@ -16,6 +16,7 @@ const App = () => {
 
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/callback" element={<Callback />} />
         </Routes>
       </div>
     </Router>
