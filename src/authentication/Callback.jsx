@@ -7,24 +7,22 @@ const Callback = () => {
   useEffect(() => {
     const fetchAccessToken = async (code) => {
       try {
-        const response = await fetch('https://expressjs-app-sso-kiragu-main9939-mjoga3jr.leapcell.dev/google-auth/', {
+        const response = await fetch('https://expressjs-app-sso-kiragu-maina9939-mjoqa3jr.leapcell.dev/google-auth/', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
-          body: new URLSearchParams({
-            credential: code // Use the authorization code directly
-          }),
+          body: JSON.stringify({ code }), // Send the authorization code to your backend
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        if (response.ok) {
+          const data = await response.json();
+          // Handle successful response (e.g., store tokens, redirect user)
+          console.log('Access Token:', data.accessToken);
+          navigate('/'); // Redirect user to a desired route after successful login
+        } else {
+          console.error('Failed to fetch access token');
         }
-
-        const data = await response.json();
-        console.log('Success:', data);
-
-        // Handle success - e.g., store token, redirect, etc.
       } catch (error) {
         console.error('Error fetching access token:', error);
       }
@@ -39,8 +37,7 @@ const Callback = () => {
     } else {
       console.error('No authorization code found in the URL');
     }
-  }, [navigate]); // Include any dependencies you need to trigger re-execution
-
+  }, [navigate]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">

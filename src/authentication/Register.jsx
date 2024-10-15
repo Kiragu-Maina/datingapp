@@ -29,7 +29,7 @@ const Register = () => {
     const handleGoogleSignIn = async () => {
         setIsLoading(true); // Start loading
         try {
-            const response = await fetch('https://expressjs-app-sso-kiragu-maina9939-mjoqa3jr.leapcell.dev/google-auth/url', {
+            const response = await fetch('https://expressjs-app-sso-kiragu-maina9939-mjoqa3jr.leapcell.dev/google/url', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
