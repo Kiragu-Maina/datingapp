@@ -41,8 +41,8 @@ const Callback = () => {
 
   return (
     <div>
-      <h1>Loading...</h1>
-      <p>Please wait while we process your login.</p>
+      Loading...
+      Please wait while we process your login.
     </div>
   );
 };
