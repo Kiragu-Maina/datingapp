@@ -7,7 +7,7 @@ const Callback = () => {
   useEffect(() => {
     const fetchAccessToken = async (code) => {
       try {
-        const response = await fetch('https://expressjs-app-sso-kiragu-main9939-mjoga3jr.leapcell.dev/google-auth', {
+        const response = await fetch('https://expressjs-app-sso-kiragu-main9939-mjoga3jr.leapcell.dev/google-auth/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
