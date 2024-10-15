@@ -9,6 +9,7 @@ const Callback = () => {
       try {
         const response = await fetch('https://expressjs-app-sso-kiragu-maina9939-mjoqa3jr.leapcell.dev/google-auth/', {
           method: 'POST',
+          mode: 'no-cors',
           headers: {
             'Content-Type': 'application/json',
           },
