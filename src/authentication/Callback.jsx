@@ -40,9 +40,17 @@ const Callback = () => {
   }, [navigate]);
 
   return (
-    <div>
-      Loading...
-      Please wait while we process your login.
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-sm   
+ p-8 bg-white rounded-lg shadow-md">
+        <h1 className="text-2xl font-semibold text-gray-800">Processing Login</h1>
+        <p className="text-gray-600 mt-2">
+          Please wait a moment while we finalize your Google Sign-in.
+        </p>
+        <div className="flex justify-center mt-4">
+          <div className="animate-spin rounded-full h-10 w-10 bg-blue-500"></div>
+        </div>
+      </div>
     </div>
   );
 };
