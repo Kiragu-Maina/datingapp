@@ -31,7 +31,7 @@
         try {
           // Call your backend to get the authorization URL
           const response = await fetch('https://expressjs-app-sso-kiragu-maina9939-mjoqa3jr.leapcell.dev/google-auth/url', {
-            method: 'GET',
+            method: 'GET', 
             headers: {
               'Content-Type': 'application/json',
             },
