@@ -31,7 +31,7 @@ const Register = () => {
         try {
             const response = await fetch('https://datingappbackend-kiragu-maina9939-unzvrf2a.leapcell.dev/request', {
                 method: 'GET',
-                credentials: 'include', // if you are using cookies or other credentials
+                
                 headers: {
                     'Content-Type': 'application/json',
                 },
