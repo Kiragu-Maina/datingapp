@@ -29,7 +29,7 @@ const Register = () => {
     const handleGoogleSignIn = async () => {
         setIsLoading(true); // Start loading
         try {
-            const response = await fetch('https://expressjs-app-sso-kiragu-maina9939-mjoqa3jr.leapcell.dev/google/url', {
+            const response = await fetch('https://datingappbackend-kiragu-maina9939-unzvrf2a.leapcell.dev/request', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -153,12 +153,29 @@ const Register = () => {
                 isOpen={modalIsOpen}
                 onRequestClose={() => setModalIsOpen(false)}
                 contentLabel="Google Sign-In"
+                className="fixed inset-0 flex items-center justify-center z-50 outline-none"
+                overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40"
             >
-                <h2>Google Sign-In</h2>
-                <p>Please click the button below to continue with Google sign-in.</p>
-                <button onClick={handleModalClose}>Proceed to Google Sign-In</button>
-                <button onClick={() => setModalIsOpen(false)}>Cancel</button>
+                <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-4">Google Sign-In</h2>
+                    <p className="text-gray-600 mb-6">Please click the button below to continue with Google sign-in.</p>
+                    <div className="flex justify-end gap-4">
+                        <button
+                            onClick={handleModalClose}
+                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                        >
+                            Proceed to Google Sign-In
+                        </button>
+                        <button
+                            onClick={() => setModalIsOpen(false)}
+                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
             </Modal>
+
         </div>
     );
 };
